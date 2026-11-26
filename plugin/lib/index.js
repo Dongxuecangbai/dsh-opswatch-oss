@@ -12,16 +12,6 @@ const OPS = process.env.OPSWATCH_CLI || HOME + '/.opswatch/ops.py'
 
 export function apply(ctx) {
   ctx.inject(['dshGo'], (ctx) => {
-    // 有字 → 召回故障；空着 → 生成开工前查卡点的命令
-    ctx.dshGo.on('check', (scope, event) => {
-      const zh = !String(event.locale).startsWith('en')
-      const q = String(scope.draft ?? '').trim()
-      if (q === '') {
-        return { insert: 'python3 ' + OPS + ' before ', toast: zh ? '补上任务名再发' : 'Add a task keyword' }
-      }
-      return { insert: 'python3 ' + OPS + ' recall "' + q.slice(0, 40) + '"', toast: zh ? '召回命令已放好' : 'Recall inserted' }
-    })
-
     // 输入框内容记成一条卡点（未验证）：第一行"什么时候"，其余"必做"
     ctx.dshGo.on('log', (scope, event) => {
       const zh = !String(event.locale).startsWith('en')
