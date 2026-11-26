@@ -23,7 +23,7 @@
       "draft"
     ],
     "contributes": {
-      "composer.actions": [
+      "composer.tools": [
         {
           "id": "check",
           "label": {
@@ -43,13 +43,6 @@
             "en": "Log"
           },
           "icon": "save"
-        }
-      ],
-      "composer.strip": [
-        {
-          "id": "counts",
-          "icon": "warning",
-          "panel": "gates"
         }
       ],
       "panels": [

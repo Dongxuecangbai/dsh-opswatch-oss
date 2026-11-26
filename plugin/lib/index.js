@@ -2,7 +2,6 @@
 // 数据：~/.opswatch/ops.db（gate 卡点、fault 故障模式）、~/.opswatch/memory.db（regress 错题）。
 // 两张库各自 try/catch，一张表挂了不许拖垮状态条。
 import { DatabaseSync } from 'node:sqlite'
-import { homedir } from 'node:os'
 
 export const name = 'local-opswatch'
 
@@ -11,46 +10,8 @@ const OPS_DB = process.env.OPSWATCH_DB || HOME + '/.opswatch/ops.db'
 const MEM_DB = process.env.OPSWATCH_MEM || HOME + '/.opswatch/memory.db'
 const OPS = process.env.OPSWATCH_CLI || HOME + '/.opswatch/ops.py'
 
-function one(dbPath, sql, fallback = null) {
-  try {
-    const db = new DatabaseSync(dbPath, { readOnly: true })
-    const row = db.prepare(sql).get()
-    db.close()
-    return row ? Number(row[Object.keys(row)[0]]) : fallback
-  } catch {
-    return fallback
-  }
-}
-
-function tally() {
-  return {
-    g: one(OPS_DB, 'SELECT COUNT(*) AS n FROM gate'),
-    f: one(OPS_DB, 'SELECT COUNT(*) AS n FROM fault'),
-    r: one(MEM_DB, "SELECT COUNT(*) AS n FROM regress WHERE status = 'open'"),
-  }
-}
-
 export function apply(ctx) {
   ctx.inject(['dshGo'], (ctx) => {
-    ctx.dshGo.strip('counts', (scope, emit, caps) => {
-      const zh = !String(caps.locale).startsWith('en')
-      const tick = () => {
-        const { g, f, r } = tally()
-        const parts = []
-        if (g !== null) parts.push((zh ? '卡点 ' : 'G ') + g)
-        if (f !== null) parts.push((zh ? '故障 ' : 'F ') + f)
-        if (r !== null) parts.push((zh ? '错题 ' : 'R ') + r)
-        if (parts.length === 0) {
-          return emit({ text: zh ? '库读不到' : 'DB unreadable', icon: 'warning', tone: 'warn' })
-        }
-        const text = parts.join(' · ')
-        emit({ text: text.length > 24 ? text.slice(0, 24) : text, icon: 'warning', tone: r === null || r === 0 ? 'info' : 'warn' })
-      }
-      tick()
-      const timer = setInterval(tick, 60_000)
-      return () => clearInterval(timer)
-    })
-
     // 有字 → 召回故障；空着 → 生成开工前查卡点的命令
     ctx.dshGo.on('check', (scope, event) => {
       const zh = !String(event.locale).startsWith('en')
