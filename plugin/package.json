@@ -1,0 +1,72 @@
+{
+  "name": "local-opswatch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dshGo": {
+    "v": 1,
+    "title": {
+      "zh": "卡点",
+      "en": "Gates"
+    },
+    "icon": "wrench",
+    "wants": [
+      "draft"
+    ],
+    "contributes": {
+      "composer.actions": [
+        {
+          "id": "check",
+          "label": {
+            "zh": "查卡点",
+            "en": "Check"
+          },
+          "icon": "search",
+          "effect": {
+            "type": "insert",
+            "text": "开工前先查卡点：python3 ~/.opswatch/ops.py before "
+          }
+        },
+        {
+          "id": "log",
+          "label": {
+            "zh": "记进卡点",
+            "en": "Log"
+          },
+          "icon": "save"
+        }
+      ],
+      "composer.strip": [
+        {
+          "id": "counts",
+          "icon": "warning",
+          "panel": "gates"
+        }
+      ],
+      "panels": [
+        {
+          "id": "gates",
+          "title": {
+            "zh": "卡点与错题",
+            "en": "Gates"
+          },
+          "icon": "bug",
+          "placement": [
+            "session.tab",
+            "features",
+            "chat.panel"
+          ]
+        }
+      ]
+    }
+  }
+}
