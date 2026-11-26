@@ -8,6 +8,8 @@ AI 助手最容易犯的错，不是能力不够，是**同一个坑踩两遍**�
 
 > 文中示例都是中性场景，只讲机制。
 
+![数据流](docs/demo.png)
+
 ## 两个库，四张表
 
 `ops.db`（干活）：`gate` 卡点、`fault` 故障模式、`tool` / `playbook` / `step` 工具与流程。
@@ -85,4 +87,4 @@ dsh plugin --profile web add ./plugin
 
 ## License
 
-未定，建议 MIT。作者自填。
+MIT，见 [LICENSE](LICENSE)。
